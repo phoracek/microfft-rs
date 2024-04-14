@@ -167,4 +167,5 @@ cfft_impls! {
     12 => (4096, CFftN4096, CFftN2048),
     13 => (8192, CFftN8192, CFftN4096),
     14 => (16384, CFftN16384, CFftN8192),
+    15 => (32768, CFftN32768, CFftN16384),
 }

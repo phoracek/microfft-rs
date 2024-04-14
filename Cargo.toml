@@ -9,7 +9,7 @@ keywords = ["fft", "dft", "fourier"]
 categories = ["algorithms", "embedded", "no-std", "science"]
 license = "MIT"
 edition = "2021"
-rust-version = "1.56"
+rust-version = "1.61"
 
 [dependencies]
 cfg-if = "1"
@@ -26,7 +26,7 @@ rustfft = "6"
 # see https://github.com/rust-lang/cargo/issues/2911
 [dev-dependencies.microfft]
 path = "."
-features = ["std", "size-16384"]
+features = ["std", "size-32768"]
 
 [features]
 default = ["size-4096"]
@@ -45,6 +45,7 @@ size-2048 = ["size-1024"]
 size-4096 = ["size-2048"]
 size-8192 = ["size-4096"]
 size-16384 = ["size-8192"]
+size-32768 = ["size-16384"]
 
 [badges]
 gitlab = { repository = "teskje/microfft-rs" }
