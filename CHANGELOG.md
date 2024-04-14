@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## Unreleased
+
+### Added
+
+- Support for FFT size 32768.
+
+
 ## 0.5.1 (2023-05-18)
 
 ### Added

@@ -146,6 +146,7 @@ features:
 | `size-4096`  |                   4,092 |               12,284 |
 | `size-8192`  |                   8,188 |               24,572 |
 | `size-16384` |                  16,380 |               49,148 |
+| `size-32768` |                  32,764 |               98,300 |
 
 In addition, the code size also increases with FFT size.
 
@@ -153,7 +154,7 @@ In addition, the code size also increases with FFT size.
 
 microfft only supports FFT point-sizes that are powers of two, a limitation of
 the Radix-2 algorithm. Additionally, the maximum supported size is currently
-16384, although this limit can be increased in the future as necessary.
+32768, although this limit can be increased in the future as necessary.
 
 ### `f64` Support
 

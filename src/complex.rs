@@ -42,4 +42,5 @@ cfft_impls! {
     4096 => (cfft_4096, CFftN4096, "size-4096"),
     8192 => (cfft_8192, CFftN8192, "size-8192"),
     16384 => (cfft_16384, CFftN16384, "size-16384"),
+    32768 => (cfft_32768, CFftN32768, "size-32768"),
 }

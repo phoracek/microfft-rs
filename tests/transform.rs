@@ -1,6 +1,7 @@
 use std::convert::TryInto;
 
 use microfft::Complex32;
+use num_complex::ComplexFloat;
 use rustfft::algorithm::Radix4;
 use rustfft::{Fft, FftDirection};
 
@@ -19,12 +20,13 @@ fn rust_fft(input: &[Complex32]) -> Vec<Complex32> {
 }
 
 fn approx_eq(a: Complex32, b: Complex32) -> bool {
-    fn approx_f32(x: f32, y: f32) -> bool {
+    let abs = a.abs();
+
+    let approx_f32 = |x: f32, y: f32| {
         let diff = (x - y).abs();
-        let x_abs = x.abs();
-        let rel_diff = if x_abs > 1. { diff / x_abs } else { diff };
-        rel_diff < 0.05
-    }
+        let rel_diff = if abs > 1. { diff / abs } else { diff };
+        rel_diff < 0.005
+    };
 
     approx_f32(a.re, b.re) && approx_f32(a.im, b.im)
 }
@@ -32,7 +34,7 @@ fn approx_eq(a: Complex32, b: Complex32) -> bool {
 fn assert_approx_eq(xa: &[Complex32], xb: &[Complex32]) {
     assert_eq!(xa.len(), xb.len());
     for (a, b) in xa.iter().zip(xb) {
-        assert!(approx_eq(*a, *b));
+        assert!(approx_eq(*a, *b), "{a} !~ {b}");
     }
 }
 
@@ -71,6 +73,7 @@ cfft_tests! {
     cfft_4096: 4096,
     cfft_8192: 8192,
     cfft_16384: 16384,
+    cfft_32768: 32768,
 }
 
 macro_rules! ifft_tests {
@@ -109,6 +112,7 @@ ifft_tests! {
     ifft_4096: (4096, cfft_4096),
     ifft_8192: (8192, cfft_8192),
     ifft_16384: (16384, cfft_16384),
+    ifft_32768: (32768, cfft_32768),
 }
 
 macro_rules! rfft_tests {
@@ -150,4 +154,5 @@ rfft_tests! {
     rfft_4096: (4096, cfft_4096),
     rfft_8192: (8192, cfft_8192),
     rfft_16384: (16384, cfft_16384),
+    rfft_32768: (32768, cfft_32768),
 }

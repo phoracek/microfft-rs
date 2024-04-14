@@ -56,4 +56,5 @@ rfft_impls! {
     4096 => (rfft_4096, RFftN4096, "size-2048"),
     8192 => (rfft_8192, RFftN8192, "size-4096"),
     16384 => (rfft_16384, RFftN16384, "size-8192"),
+    32768 => (rfft_32768, RFftN32768, "size-16384"),
 }

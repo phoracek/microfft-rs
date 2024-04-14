@@ -60,4 +60,5 @@ ifft_impls! {
     (IFftN4096, CFftN4096),
     (IFftN8192, CFftN8192),
     (IFftN16384, CFftN16384),
+    (IFftN32768, CFftN32768),
 }

@@ -42,4 +42,5 @@ ifft_impls! {
     4096 => (ifft_4096, IFftN4096, "size-4096"),
     8192 => (ifft_8192, IFftN8192, "size-8192"),
     16384 => (ifft_16384, IFftN16384, "size-16384"),
+    32768 => (ifft_32768, IFftN32768, "size-32768"),
 }
