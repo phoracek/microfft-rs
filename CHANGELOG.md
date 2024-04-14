@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+### Changed
+
+- **Breaking:** The MSRV has been increased to 1.61.0.
+
 ### Added
 
 - Support for FFT size 32768.
