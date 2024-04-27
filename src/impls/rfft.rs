@@ -71,10 +71,10 @@ pub(crate) trait RFft {
     }
 }
 
-pub(crate) struct RFftN2;
+pub(crate) struct RFftN<const N: usize>;
 
-impl RFft for RFftN2 {
-    type CFft = CFftN1;
+impl RFft for RFftN<2> {
+    type CFft = CFftN<1>;
 
     #[inline]
     fn recombine(x: &mut [Complex32]) {
@@ -89,31 +89,13 @@ impl RFft for RFftN2 {
 }
 
 macro_rules! rfft_impls {
-    ( $( ($RFftN:ident, $CFftN:ident), )* ) => {
+    ( $( $N:expr ),* ) => {
         $(
-            #[allow(dead_code)]
-            pub(crate) struct $RFftN;
-
-            impl RFft for $RFftN {
-                type CFft = $CFftN;
+            impl RFft for RFftN<$N> {
+                type CFft = CFftN<{$N / 2}>;
             }
         )*
     };
 }
 
-rfft_impls! {
-    (RFftN4, CFftN2),
-    (RFftN8, CFftN4),
-    (RFftN16, CFftN8),
-    (RFftN32, CFftN16),
-    (RFftN64, CFftN32),
-    (RFftN128, CFftN64),
-    (RFftN256, CFftN128),
-    (RFftN512, CFftN256),
-    (RFftN1024, CFftN512),
-    (RFftN2048, CFftN1024),
-    (RFftN4096, CFftN2048),
-    (RFftN8192, CFftN4096),
-    (RFftN16384, CFftN8192),
-    (RFftN32768, CFftN16384),
-}
+rfft_impls! { 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768 }

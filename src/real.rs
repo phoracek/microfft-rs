@@ -19,7 +19,7 @@ use crate::impls::rfft::*;
 use crate::Complex32;
 
 macro_rules! rfft_impls {
-    ( $( $N:expr => ($rfft_N:ident, $RFftN:ident $(, $feature:expr)?), )* ) => {
+    ( $( $N:expr => ($rfft_N:ident $(, $feature:expr)?), )* ) => {
         $(
             #[doc = concat!("Perform an in-place ", stringify!($N), "-point RFFT.")]
             #[doc = ""]
@@ -35,26 +35,26 @@ macro_rules! rfft_impls {
             #[inline]
             #[must_use]
             pub fn $rfft_N(input: &mut [f32; $N]) -> &mut [Complex32; $N / 2] {
-                $RFftN::transform(input).try_into().unwrap()
+                RFftN::<$N>::transform(input).try_into().unwrap()
             }
         )*
     };
 }
 
 rfft_impls! {
-    2 => (rfft_2, RFftN2),
-    4 => (rfft_4, RFftN4),
-    8 => (rfft_8, RFftN8, "size-4"),
-    16 => (rfft_16, RFftN16, "size-8"),
-    32 => (rfft_32, RFftN32, "size-16"),
-    64 => (rfft_64, RFftN64, "size-32"),
-    128 => (rfft_128, RFftN128, "size-64"),
-    256 => (rfft_256, RFftN256, "size-128"),
-    512 => (rfft_512, RFftN512, "size-256"),
-    1024 => (rfft_1024, RFftN1024, "size-512"),
-    2048 => (rfft_2048, RFftN2048, "size-1024"),
-    4096 => (rfft_4096, RFftN4096, "size-2048"),
-    8192 => (rfft_8192, RFftN8192, "size-4096"),
-    16384 => (rfft_16384, RFftN16384, "size-8192"),
-    32768 => (rfft_32768, RFftN32768, "size-16384"),
+    2 => (rfft_2),
+    4 => (rfft_4),
+    8 => (rfft_8, "size-4"),
+    16 => (rfft_16, "size-8"),
+    32 => (rfft_32, "size-16"),
+    64 => (rfft_64, "size-32"),
+    128 => (rfft_128, "size-64"),
+    256 => (rfft_256, "size-128"),
+    512 => (rfft_512, "size-256"),
+    1024 => (rfft_1024, "size-512"),
+    2048 => (rfft_2048, "size-1024"),
+    4096 => (rfft_4096, "size-2048"),
+    8192 => (rfft_8192, "size-4096"),
+    16384 => (rfft_16384, "size-8192"),
+    32768 => (rfft_32768, "size-16384"),
 }

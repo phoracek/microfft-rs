@@ -4,7 +4,7 @@ pub(crate) trait CFft {
     type Half: CFft;
 
     const N: usize;
-    const LOG2_N: usize;
+    const LOG2_N: usize = Self::N.ilog2() as usize;
 
     #[cfg(feature = "bitrev-tables")]
     const BITREV_TABLE: &'static [u16] = tables::BITREV[Self::LOG2_N];
@@ -100,13 +100,12 @@ pub(crate) trait CFft {
     }
 }
 
-pub(crate) struct CFftN1;
+pub(crate) struct CFftN<const N: usize>;
 
-impl CFft for CFftN1 {
+impl CFft for CFftN<1> {
     type Half = Self;
 
     const N: usize = 1;
-    const LOG2_N: usize = 0;
 
     #[inline]
     fn bit_reverse_reorder(x: &mut [Complex32]) {
@@ -119,13 +118,10 @@ impl CFft for CFftN1 {
     }
 }
 
-pub(crate) struct CFftN2;
-
-impl CFft for CFftN2 {
-    type Half = CFftN1;
+impl CFft for CFftN<2> {
+    type Half = CFftN<1>;
 
     const N: usize = 2;
-    const LOG2_N: usize = 1;
 
     #[inline]
     fn compute_butterflies(x: &mut [Complex32]) {
@@ -138,34 +134,15 @@ impl CFft for CFftN2 {
 }
 
 macro_rules! cfft_impls {
-    ( $( $I:expr => ($N:expr, $CFftN:ident, $Half:ident), )* ) => {
+    ( $( $N:expr ),* ) => {
         $(
-            #[allow(dead_code)]
-            pub(crate) struct $CFftN;
-
-            impl CFft for $CFftN {
-                type Half = $Half;
+            impl CFft for CFftN<$N> {
+                type Half = CFftN<{$N / 2}>;
 
                 const N: usize = $N;
-                const LOG2_N: usize = $I;
             }
         )*
     };
 }
 
-cfft_impls! {
-     2 => (4, CFftN4, CFftN2),
-     3 => (8, CFftN8, CFftN4),
-     4 => (16, CFftN16, CFftN8),
-     5 => (32, CFftN32, CFftN16),
-     6 => (64, CFftN64, CFftN32),
-     7 => (128, CFftN128, CFftN64),
-     8 => (256, CFftN256, CFftN128),
-     9 => (512, CFftN512, CFftN256),
-    10 => (1024, CFftN1024, CFftN512),
-    11 => (2048, CFftN2048, CFftN1024),
-    12 => (4096, CFftN4096, CFftN2048),
-    13 => (8192, CFftN8192, CFftN4096),
-    14 => (16384, CFftN16384, CFftN8192),
-    15 => (32768, CFftN32768, CFftN16384),
-}
+cfft_impls! { 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768 }
