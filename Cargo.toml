@@ -9,7 +9,7 @@ keywords = ["fft", "dft", "fourier"]
 categories = ["algorithms", "embedded", "no-std", "science"]
 license = "MIT"
 edition = "2021"
-rust-version = "1.61"
+rust-version = "1.67"
 
 [dependencies]
 cfg-if = "1"
