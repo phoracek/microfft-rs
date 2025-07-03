@@ -19,7 +19,7 @@ fn rust_fft(input: &[Complex32]) -> Vec<Complex32> {
     buf.iter().map(|c| Complex32::new(c.re, c.im)).collect()
 }
 
-fn approx_eq(a: Complex32, b: Complex32) -> bool {
+fn approx_complex_eq(a: Complex32, b: Complex32) -> bool {
     let abs = a.abs();
 
     let approx_f32 = |x: f32, y: f32| {
@@ -31,10 +31,21 @@ fn approx_eq(a: Complex32, b: Complex32) -> bool {
     approx_f32(a.re, b.re) && approx_f32(a.im, b.im)
 }
 
-fn assert_approx_eq(xa: &[Complex32], xb: &[Complex32]) {
+fn assert_approx_complex_eq(xa: &[Complex32], xb: &[Complex32]) {
     assert_eq!(xa.len(), xb.len());
     for (a, b) in xa.iter().zip(xb) {
-        assert!(approx_eq(*a, *b), "{a} !~ {b}");
+        assert!(approx_complex_eq(*a, *b), "{a} !~ {b}");
+    }
+}
+
+fn approx_f32_eq(a: f32, b: f32) -> bool {
+    (a - b).abs() < 0.01
+}
+
+fn assert_approx_f32_eq(xa: &[f32], xb: &[f32]) {
+    assert_eq!(xa.len(), xb.len());
+    for (a, b) in xa.iter().zip(xb) {
+        assert!(approx_f32_eq(*a, *b), "{a} !~ {b}");
     }
 }
 
@@ -52,7 +63,7 @@ macro_rules! cfft_tests {
                 let mut input: [_; $N] = input.try_into().unwrap();
                 let result = microfft::complex::$name(&mut input);
 
-                assert_approx_eq(result, &expected);
+                assert_approx_complex_eq(result, &expected);
             }
         )*
     };
@@ -91,7 +102,7 @@ macro_rules! ifft_tests {
                 let transformed = microfft::complex::$cfft_name(&mut input);
                 let inversed = microfft::inverse::$name(transformed);
 
-                assert_approx_eq(inversed, &expected);
+                assert_approx_complex_eq(inversed, &expected);
             }
         )*
     };
@@ -133,7 +144,7 @@ macro_rules! rfft_tests {
                 assert_eq!(coeff_at_nyquist, expected[$N / 2].re);
                 // Clear this value before checking the results.
                 result[0].im = 0.0;
-                assert_approx_eq(result, &expected[..($N / 2)]);
+                assert_approx_complex_eq(result, &expected[..($N / 2)]);
             }
         )*
     };
@@ -155,4 +166,40 @@ rfft_tests! {
     rfft_8192: (8192, cfft_8192),
     rfft_16384: (16384, cfft_16384),
     rfft_32768: (32768, cfft_32768),
+}
+
+macro_rules! irfft_tests {
+    ( $( $name:ident: ($N:expr, $rfft_name:ident), )* ) => {
+        $(
+            #[test]
+            fn $name() {
+                let input: Vec<f32> = (5..($N+5)).map(|i| i as f32).collect();
+                let mut input: [f32; $N] = input.clone().try_into().unwrap();
+                let expected = input.clone();
+
+                let transformed = microfft::real::$rfft_name(&mut input);
+                let inversed = microfft::inverse_real::$name(transformed);
+
+                assert_approx_f32_eq(inversed, &expected);
+            }
+        )*
+    };
+}
+
+irfft_tests! {
+    irfft_2: (2, rfft_2),
+    irfft_4: (4, rfft_4),
+    irfft_8: (8, rfft_8),
+    irfft_16: (16, rfft_16),
+    irfft_32: (32, rfft_32),
+    irfft_64: (64, rfft_64),
+    irfft_128: (128, rfft_128),
+    irfft_256: (256, rfft_256),
+    irfft_512: (512, rfft_512),
+    irfft_1024: (1024, rfft_1024),
+    irfft_2048: (2048, rfft_2048),
+    irfft_4096: (4096, rfft_4096),
+    irfft_8192: (8192, rfft_8192),
+    irfft_16384: (16384, rfft_16384),
+    irfft_32768: (32768, rfft_32768),
 }

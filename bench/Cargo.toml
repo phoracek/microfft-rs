@@ -26,6 +26,7 @@ lto = true
 microfft-c = []
 microfft-i = []
 microfft-r = []
+microfft-ir = []
 n-4 = ["microfft/size-4"]
 n-8 = ["microfft/size-8"]
 n-16 = ["microfft/size-16"]
