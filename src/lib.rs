@@ -77,6 +77,9 @@ mod impls {
 }
 mod tables;
 
+#[cfg(any(test, feature = "test-utils"))]
+pub mod test_utils;
+
 use static_assertions::assert_cfg;
 
 assert_cfg!(

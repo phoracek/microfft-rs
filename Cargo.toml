@@ -19,19 +19,29 @@ static_assertions = "1"
 version = "0.4"
 default-features = false
 
+[dependencies.rustfft]
+version = "6"
+optional = true
+
+[dependencies.realfft]
+version = "3"
+optional = true
+
 [dev-dependencies]
 rustfft = "6"
+realfft = "3"
 
 # workaround for enabling all features for `cargo test`
 # see https://github.com/rust-lang/cargo/issues/2911
 [dev-dependencies.microfft]
 path = "."
-features = ["std", "size-32768"]
+features = ["std", "size-32768", "test-utils"]
 
 [features]
 default = ["size-4096"]
 std = ["num-complex/std"]
 bitrev-tables = []
+test-utils = ["std", "rustfft", "realfft"]
 size-4 = []
 size-8 = ["size-4"]
 size-16 = ["size-8"]
