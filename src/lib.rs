@@ -5,12 +5,16 @@
 //! additional allocations. This makes microfft suitable for `no_std`
 //! environments.
 //!
-//! This crate provides three FFT implementations:
+//! This crate provides four FFT implementations:
 //!  * [`complex`]: FFT on [`Complex32`] input values (CFFT).
 //!  * [`real`]: FFT on real (`f32`) input values (RFFT). An `N`-point RFFT
 //!    internally computes an `N/2`-point CFFT, making it roughly twice as fast
 //!    as the complex variant.
 //!  * [`inverse`]: Inverse FFT (IFFT), implemented in terms of a CFFT.
+//!  * [`inverse_real`]: Inverse FFT on the frequency domain representation of
+//!    originally real (`f32`) values. An `N`-point IRFFT internally computes
+//!    an `N/2`-point IFFT, making it roughly twice as fast as the complex
+//!    variant.
 //!
 //! # Example
 //!
@@ -28,7 +32,9 @@
 //!
 //! // compute the RFFT of the samples
 //! let mut samples: [_; 16] = samples.try_into().unwrap();
+//! let original_samples = samples.clone(); // save for comparison
 //! let spectrum = microfft::real::rfft_16(&mut samples);
+//! let mut original_spectrum = spectrum.clone();
 //! // since the real-valued coefficient at the Nyquist frequency is packed into the
 //! // imaginary part of the DC bin, it must be cleared before computing the amplitudes
 //! spectrum[0].im = 0.0;
@@ -36,10 +42,19 @@
 //! // the spectrum has a spike at index `signal_freq`
 //! let amplitudes: Vec<_> = spectrum.iter().map(|c| c.norm() as u32).collect();
 //! assert_eq!(&amplitudes, &[0, 0, 0, 8, 0, 0, 0, 0]);
+//!
+//! // compute the inverse RFFT to recover the original samples
+//! let recovered = microfft::inverse_real::irfft_16(&mut original_spectrum);
+//!
+//! // verify we recovered the original signal (within floating point precision)
+//! for (orig, recovered) in original_samples.iter().zip(recovered.iter()) {
+//!     assert!((orig - recovered).abs() < 0.001);
+//! }
 //! ```
 //!
 //! [`complex`]: complex/index.html
 //! [`inverse`]: inverse/index.html
+//! [`inverse_real`]: inverse_real/index.html
 //! [`real`]: real/index.html
 //! [`Complex32`]: type.Complex32.html
 
@@ -49,6 +64,7 @@
 
 pub mod complex;
 pub mod inverse;
+pub mod inverse_real;
 pub mod real;
 
 pub use num_complex::Complex32;
@@ -56,6 +72,7 @@ pub use num_complex::Complex32;
 mod impls {
     pub(crate) mod cfft;
     pub(crate) mod ifft;
+    pub(crate) mod irfft;
     pub(crate) mod rfft;
 }
 mod tables;
