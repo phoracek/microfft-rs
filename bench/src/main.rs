@@ -75,6 +75,20 @@ mod bench {
     }
 }
 
+#[cfg(feature = "microfft-ir")]
+mod bench {
+    use super::{n, singleton, timeit, Complex32, MonoTimer};
+
+    pub fn run(timer: MonoTimer) -> u32 {
+        let x = singleton!(: [Complex32; n::N/2] = [Complex32::new(0., 0.); n::N/2]).unwrap();
+        for (i, c) in x.iter_mut().enumerate() {
+            *c = Complex32::new(i as f32, 0.);
+        }
+
+        timeit(timer, || n::IRFFT(x))
+    }
+}
+
 fn timeit<F, R>(timer: MonoTimer, f: F) -> u32
 where
     F: FnOnce() -> R,
@@ -87,6 +101,7 @@ where
 type FnCFft<const N: usize> = fn(&mut [Complex32; N]) -> &mut [Complex32; N];
 type FnIFft<const N: usize> = fn(&mut [Complex32; N]) -> &mut [Complex32; N];
 type FnRFft<const N: usize, const M: usize> = fn(&mut [f32; N]) -> &mut [Complex32; M];
+type FnIRFft<const N: usize, const M: usize> = fn(&mut [Complex32; M]) -> &mut [f32; N];
 
 #[cfg(feature = "n-4")]
 mod n {
@@ -94,6 +109,7 @@ mod n {
     pub const CFFT: super::FnCFft<N> = microfft::complex::cfft_4;
     pub const IFFT: super::FnIFft<N> = microfft::inverse::ifft_4;
     pub const RFFT: super::FnRFft<N, { N / 2 }> = microfft::real::rfft_4;
+    pub const IRFFT: super::FnIRFft<N, { N / 2 }> = microfft::inverse_real::irfft_4;
 }
 
 #[cfg(feature = "n-8")]
@@ -102,6 +118,7 @@ mod n {
     pub const CFFT: super::FnCFft<N> = microfft::complex::cfft_8;
     pub const IFFT: super::FnIFft<N> = microfft::inverse::ifft_8;
     pub const RFFT: super::FnRFft<N, { N / 2 }> = microfft::real::rfft_8;
+    pub const IRFFT: super::FnIRFft<N, { N / 2 }> = microfft::inverse_real::irfft_8;
 }
 
 #[cfg(feature = "n-16")]
@@ -110,6 +127,7 @@ mod n {
     pub const CFFT: super::FnCFft<N> = microfft::complex::cfft_16;
     pub const IFFT: super::FnIFft<N> = microfft::inverse::ifft_16;
     pub const RFFT: super::FnRFft<N, { N / 2 }> = microfft::real::rfft_16;
+    pub const IRFFT: super::FnIRFft<N, { N / 2 }> = microfft::inverse_real::irfft_16;
 }
 
 #[cfg(feature = "n-32")]
@@ -118,6 +136,7 @@ mod n {
     pub const CFFT: super::FnCFft<N> = microfft::complex::cfft_32;
     pub const IFFT: super::FnIFft<N> = microfft::inverse::ifft_32;
     pub const RFFT: super::FnRFft<N, { N / 2 }> = microfft::real::rfft_32;
+    pub const IRFFT: super::FnIRFft<N, { N / 2 }> = microfft::inverse_real::irfft_32;
 }
 
 #[cfg(feature = "n-64")]
@@ -126,6 +145,7 @@ mod n {
     pub const CFFT: super::FnCFft<N> = microfft::complex::cfft_64;
     pub const IFFT: super::FnIFft<N> = microfft::inverse::ifft_64;
     pub const RFFT: super::FnRFft<N, { N / 2 }> = microfft::real::rfft_64;
+    pub const IRFFT: super::FnIRFft<N, { N / 2 }> = microfft::inverse_real::irfft_64;
 }
 
 #[cfg(feature = "n-128")]
@@ -134,6 +154,7 @@ mod n {
     pub const CFFT: super::FnCFft<N> = microfft::complex::cfft_128;
     pub const IFFT: super::FnIFft<N> = microfft::inverse::ifft_128;
     pub const RFFT: super::FnRFft<N, { N / 2 }> = microfft::real::rfft_128;
+    pub const IRFFT: super::FnIRFft<N, { N / 2 }> = microfft::inverse_real::irfft_128;
 }
 
 #[cfg(feature = "n-256")]
@@ -142,6 +163,7 @@ mod n {
     pub const CFFT: super::FnCFft<N> = microfft::complex::cfft_256;
     pub const IFFT: super::FnIFft<N> = microfft::inverse::ifft_256;
     pub const RFFT: super::FnRFft<N, { N / 2 }> = microfft::real::rfft_256;
+    pub const IRFFT: super::FnIRFft<N, { N / 2 }> = microfft::inverse_real::irfft_256;
 }
 
 #[cfg(feature = "n-512")]
@@ -150,6 +172,7 @@ mod n {
     pub const CFFT: super::FnCFft<N> = microfft::complex::cfft_512;
     pub const IFFT: super::FnIFft<N> = microfft::inverse::ifft_512;
     pub const RFFT: super::FnRFft<N, { N / 2 }> = microfft::real::rfft_512;
+    pub const IRFFT: super::FnIRFft<N, { N / 2 }> = microfft::inverse_real::irfft_512;
 }
 
 #[cfg(feature = "n-1024")]
@@ -158,6 +181,7 @@ mod n {
     pub const CFFT: super::FnCFft<N> = microfft::complex::cfft_1024;
     pub const IFFT: super::FnIFft<N> = microfft::inverse::ifft_1024;
     pub const RFFT: super::FnRFft<N, { N / 2 }> = microfft::real::rfft_1024;
+    pub const IRFFT: super::FnIRFft<N, { N / 2 }> = microfft::inverse_real::irfft_1024;
 }
 
 #[cfg(feature = "n-2048")]
@@ -166,6 +190,7 @@ mod n {
     pub const CFFT: super::FnCFft<N> = microfft::complex::cfft_2048;
     pub const IFFT: super::FnIFft<N> = microfft::inverse::ifft_2048;
     pub const RFFT: super::FnRFft<N, { N / 2 }> = microfft::real::rfft_2048;
+    pub const IRFFT: super::FnIRFft<N, { N / 2 }> = microfft::inverse_real::irfft_2048;
 }
 
 #[cfg(feature = "n-4096")]
@@ -174,4 +199,5 @@ mod n {
     pub const CFFT: super::FnCFft<N> = microfft::complex::cfft_4096;
     pub const IFFT: super::FnIFft<N> = microfft::inverse::ifft_4096;
     pub const RFFT: super::FnRFft<N, { N / 2 }> = microfft::real::rfft_4096;
+    pub const IRFFT: super::FnIRFft<N, { N / 2 }> = microfft::inverse_real::irfft_4096;
 }
